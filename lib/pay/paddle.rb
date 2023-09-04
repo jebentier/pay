@@ -21,7 +21,7 @@ module Pay
     def self.enabled?
       return false unless Pay.enabled_processors.include?(:paddle) && defined?(::Paddle)
 
-      Pay::Engine.version_matches?(required: "~> 1.1", current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version ~> 1.1")
+      Pay::Engine.version_matches?(required: "~> 2.1", current: ::Paddle::VERSION) || (raise "[Pay] paddle gem must be version ~> 2.1")
     end
 
     def self.setup
@@ -39,6 +39,14 @@ module Pay
 
     def self.signing_secret
       find_value_by_name(:paddle, :signing_secret)
+    end
+
+    def self.default_product_id
+      find_value_by_name(:paddle, :product_id)
+    end
+
+    def self.vendor_id
+      find_value_by_name(:paddle, :vendor_id)
     end
 
     def self.passthrough(owner:)
