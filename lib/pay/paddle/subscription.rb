@@ -36,7 +36,10 @@ module Pay
 
         return unless pay_customer
 
-        attributes = {}
+        attributes = {
+          current_period_start: Time.zone.parse(object.current_billing_period.starts_at),
+          current_period_end: Time.zone.parse(object.current_billing_period.ends_at),
+        }
 
         attributes[:status] = object.status
 
@@ -58,6 +61,10 @@ module Pay
         when "paused", "deleted"
           attributes[:trial_ends_at] = nil
           attributes[:ends_at] = Time.zone.parse(object.next_bill_date)
+        when "active"
+          if object.scheduled_change && object.scheduled_change.action == "cancel"
+            attributes[:ends_at] = Time.zone.parse(object.scheduled_change.effective_at)
+          end
         end
 
         # Update or create the subscription
